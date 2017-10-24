@@ -21,11 +21,6 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-        if(Input.GetKeyDown(KeyCode.N))
-        {
-            GameObject newNode = Instantiate(node, spawnSpot );
-            ans.nodePositions.Add(newNode.transform);
-            ans.PlacedNode();
-        }
+       
 	}
 }

@@ -3,17 +3,15 @@
 // Created: 10/17/2017
 // Last Updated: 10/20/2017 CP
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ANSManager: MonoBehaviour
+public class ANSManager: MonoBehaviour, IGetRor
 {
-
-    [SerializeField]
-    public List<Transform> nodePositions = new List<Transform>();
+    public List<Node> nodeList = new List<Node>();
     int nodeCount;
-    //float tooFar = 20;
 
     public delegate void NewNode();
     public event NewNode NodePlaced;
@@ -21,43 +19,47 @@ public class ANSManager: MonoBehaviour
     public delegate void LostNode();
     public event LostNode NodeRemoved;
 
-
-    public Transform GetNodes(Vector3 from)
+    static int SortByRor(Node node1, Node node2)
     {
-        //Debug.Log(from. + " made it here");
-        Transform optimalNode = null;
-        float minDistance = Mathf.Infinity;
+        return node1.ror.CompareTo(node2.ror);
+    }
 
-        for (int i = 0; i < nodePositions.Count; i++)
-        {
-            // Use this if you want to have the visitors ignore nodes that are far away
-
-            //float distanceFrom = Vector3.Distance(from, nodePositions[i].position);
-            //if (distanceFrom > tooFar)
-            //{
-            //    continue;
-            //}
-
-            float tempDis = Vector3.Distance(from, nodePositions[i].position);
-            if (tempDis < minDistance)
-            {
-                minDistance = tempDis;
-                optimalNode = nodePositions[i];
-            }
-        }
-        return optimalNode;
+    public List<Node> SortedNodeListForGui()
+    {
+        nodeList.Sort(SortByRor);
+        nodeList.Reverse();
+        return nodeList;
     }
 
     public void PlacedNode()
     {
         NodePlaced();
-        nodeCount = nodePositions.Count;
+        nodeCount = nodeList.Count;
     }
 
     public void RemovedNode()
     {
-        nodeCount = nodePositions.Count;
+        nodeCount = nodeList.Count;
         NodeRemoved();
     }
-    
+
+
+
+    //public Transform GetNodes(Vector3 from)
+    //{
+    //    Transform optimalNode = null;
+    //    float minDistance = Mathf.Infinity;
+
+    //    for (int i = 0; i < nodeList.Count; i++)
+    //    {
+    //        float tempDis = Vector3.Distance(from, nodeList[i].position);
+    //        if (tempDis < minDistance)
+    //        {
+    //            minDistance = tempDis;
+    //            optimalNode = nodeList[i];
+    //        }
+    //    }
+    //    return optimalNode;
+    //}
+
 }

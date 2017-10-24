@@ -7,7 +7,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node_Visitor : MonoBehaviour 
+public class Node_Visitor : MonoBehaviour, IHappinessIncreaseable 
 {
     public float happiness = 50;
+
+
+    public void IncreaseHappiness(float ror)
+    {
+        happiness = happiness + ror;
+    }
 }
+

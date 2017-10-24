@@ -7,9 +7,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node_Creature : MonoBehaviour 
+public class Node_Creature : MonoBehaviour, ICreature 
 {
+    [SerializeField]
+    float rarity = 3;
 
+    public float GetDinoRarity()
+    {
+        return rarity;
+    }
 
    
 }

@@ -10,23 +10,27 @@ using UnityEngine;
 
 public class Node : MonoBehaviour 
 {
-    //ANSManager ans;
-    public float ror = 3;
-
-    // This node's lists of creatures and visitors to calculate RoR and to heal visitors in the list when they are in range
-    // ***** Be sure to change the types here and on the OnTriggerEnter/Exit functions!!!!!! ****
     [SerializeField]
-    public List<Node_Visitor> visitors = new List<Node_Visitor>();
-    public List<Node_Creature> creatures = new List<Node_Creature>();
-    
-    #region ( ror multipliers )
+    [Tooltip("Place the ANS Manager here")]
+    ANSManager ans;
+  
+    // This node's lists of creatures and visitors to calculate RoR and to heal visitors in the list when they are in range
+    public List<IHappinessIncreaseable> visitors = new List<IHappinessIncreaseable>();
+    public List<ICreature> creatures = new List<ICreature>();
+
+    [Tooltip("Do not edit this value, it is visible in the inspector for debugging only. The script will update this appropriately. This is the value that will be used to sort the nodes in the GUI")]
+    public float ror = 3;
+    #region ( Ror multipliers )
     // Multiplers for RoR Calculation
+    [SerializeField]
+    [Tooltip("This is the base ror of any node, set it to whatever you like")]
     float baseRorAmount = 3;
     float creatureRorMultiplier = 0.75f;
+    float rarityMultiplier;
     float visitorRorMultiplier = 0.015f;
     #endregion
 
-    #region(variables that may trigger a RoR update)
+    #region(Variables that may trigger a RoR update)
     int currentVisitorCount;
     int currentCreatureCount;
     float checkTimer;
@@ -36,64 +40,64 @@ public class Node : MonoBehaviour
     int maxCountChange;
     #endregion
 
-    float NodeVisitorAoe = 35;
-    //float NodeCreatureAoi = 35;
+    float NodeAoe = 35;
     [SerializeField]
-    float increaseWaitTimer = 3;
-    bool crIsRunning;
+    [Tooltip ("How long between each heal to the visitors' happiness")]
+    float increaseWaitTimer = 1;
+    
 
 
 
     // Use this for initialization
     void Start () 
 	{
-        //ans = FindObjectOfType<ANSManager>();
-        //// This is here to test things out. When implemented, if this isn't removed, every node will be added to the list
-        //// twice. Once from the ANS Manager and once here
-        //ans.nodePositions.Add(this.transform);
-
-        // When the node is first placed, find all the visitors and creatures that are within range and add them to the apprpriate list. Then update the RoR.
-       //GrabCreaturesAndVisitors(this.transform.position);
+       
+        StartCoroutine(IncreaseHappiness());
+        ans.nodeList.Add(this);
+        GrabCreaturesAndVisitors(this.transform.position);
         UpdateROR();
-	}
+    }
 
-    //void GrabCreaturesAndVisitors(Vector3 center)
-    //{
-    //    Collider[] visitorColliders = Physics.OverlapSphere(center, NodeVisitorAoe);
+    void GrabCreaturesAndVisitors(Vector3 center)
+    {
+        Collider[] visitorColliders = Physics.OverlapSphere(center, NodeAoe);
 
-    //    foreach (Collider hit in visitorColliders)
-    //    {
-    //        if (hit.GetComponent<Node_Visitor>())
-    //        {
-    //            visitors.Add(hit.GetComponent<Node_Visitor>());
-    //        }
-    //    }
+        foreach (Collider hit in visitorColliders)
+        {
+            if (hit.GetComponent(typeof(IHappinessIncreaseable)))
+            {
+                visitors.Add((IHappinessIncreaseable)hit.GetComponent(typeof(IHappinessIncreaseable)));
+            }
+            else if (hit.GetComponent(typeof(ICreature)))
+            {
+                creatures.Add((ICreature)hit.GetComponent(typeof(ICreature)));
+            }
+        }
+    }
 
-    //    Collider[] creatureColliders = Physics.OverlapSphere(center, NodeCreatureAoi);
-
-    //    foreach (Collider hit in creatureColliders)
-    //    {
-    //        if (hit.GetComponent<Node_Creature>())
-    //        {
-    //            creatures.Add(hit.GetComponent<Node_Creature>());
-    //        }
-    //    }
-    //}
     public void UpdateROR()
     {
+        rarityMultiplier = 0;
+
+        for (int i = 0; i < creatures.Count; i++)
+        {
+            rarityMultiplier = rarityMultiplier + creatures[i].GetDinoRarity();
+        }
+
+        float finalDinoMultiplier = creatureRorMultiplier * rarityMultiplier;
 
         if (visitors.Count > 5)
         {
-            // Checks to see if the current count of creatures or visitors has shifted up or down by 5. (the commented out if() is the long way of writing everything out if the Mathf.Abs formula isn't working.)
+            // Checks to see if the current count of creatures or visitors has shifted up or down by 5.
             // This check is to help not run calculations when they aren't 100% needed.
-            //if(visitors.Count > currentVisitorCount + 5 || visitors.Count < currentVisitorCount - 5 || creatures.Count > currentCreatureCount + 5 || creatures.Count < currentCreatureCount - 5 || checkTimer > checkTimeLimit)
-            if (visitors.Count - currentVisitorCount == Mathf.Abs(maxCountChange) || creatures.Count - currentCreatureCount == Mathf.Abs(maxCountChange) || checkTimer >= checkTimeLimit)
+            if (visitors.Count - currentVisitorCount >= Mathf.Abs(maxCountChange) || creatures.Count - currentCreatureCount == Mathf.Abs(maxCountChange))
             {
                 currentVisitorCount = visitors.Count;
                 currentCreatureCount = creatures.Count;
+                
 
-                // The fancy equation goes here :)
-                ror = Mathf.Clamp((baseRorAmount + (creatures.Count * creatureRorMultiplier)) - visitors.Count * Mathf.Exp(visitorRorMultiplier), baseRorAmount, 20);
+                // The fancy equation :)
+                ror = Mathf.Clamp((baseRorAmount + (creatures.Count * finalDinoMultiplier)) - visitors.Count * Mathf.Exp(visitorRorMultiplier), baseRorAmount, 20);
             }
         }
         else
@@ -101,63 +105,59 @@ public class Node : MonoBehaviour
             currentVisitorCount = visitors.Count;
             currentCreatureCount = creatures.Count;
 
-            // The fancy equation goes here :)
-            ror = Mathf.Clamp((baseRorAmount + (creatures.Count * creatureRorMultiplier)) - visitors.Count * Mathf.Exp(visitorRorMultiplier), baseRorAmount, 20);
+            // The fancy equation :)
+            ror = Mathf.Clamp((baseRorAmount + (creatures.Count * finalDinoMultiplier)) - visitors.Count * Mathf.Exp(visitorRorMultiplier), baseRorAmount, 20);
         }
     }
 
 
-
-    // Update is called once per frame
-    void Update () 
-	{
-        // You don't have to use the timer if you don't want to. But its here if you need/want it. If you take this out, be sure to remove it from the if-statement in UpdateROR as well
-        //checkTimer += Time.deltaTime;
-
-      if(visitors.Count > 0 && !crIsRunning)
-      {
-          StartCoroutine(IncreaseHappiness());
-      }
-	}
-
    IEnumerator IncreaseHappiness()
     {
-        crIsRunning = true;
-
-        do
+        while (true)
         {
-            for (int i = 0; i < visitors.Count; i++)
+            if (visitors.Count > 0)
             {
-                visitors[i].happiness = visitors[i].happiness + ror;
+                do
+                {
+                    for (int i = 0; i < visitors.Count; i++)
+                    {
+                        visitors[i].IncreaseHappiness(ror);
+                    }
+                    yield return new WaitForSecondsRealtime(increaseWaitTimer);
+                    UpdateROR();
+                }
+                while (visitors.Count > 0);
             }
-            yield return new WaitForSecondsRealtime(increaseWaitTimer);
+            else
+            {
+                yield return new WaitForSeconds(increaseWaitTimer);
+            }
         }
-        while (visitors.Count > 0);
        
     }
 
     private void OnTriggerEnter(Collider other)
     {
         // add the appropriate type here
-        if (other.GetComponent<Node_Visitor>())
+        if (other.GetComponent(typeof(IHappinessIncreaseable)))
         {
-            visitors.Add(other.GetComponent<Node_Visitor>());
+            visitors.Add((IHappinessIncreaseable)other.GetComponent(typeof(IHappinessIncreaseable)));
         }
-        if (other.GetComponent<Node_Creature>())
+        if (other.GetComponent(typeof(ICreature)))
         {
-            creatures.Add(other.GetComponent<Node_Creature>());
+            creatures.Add((ICreature)other.GetComponent(typeof(ICreature)));
         }
     }
     private void OnTriggerExit(Collider other)
     {
         // add the appropriate type here
-        if (other.GetComponent<Node_Visitor>())
+        if (other.GetComponent(typeof(IHappinessIncreaseable)))
         {
-            visitors.Remove(other.GetComponent<Node_Visitor>());
+            visitors.Remove((IHappinessIncreaseable)other.GetComponent(typeof(IHappinessIncreaseable)));
         }
-        if (other.GetComponent<Node_Creature>())
+        if (other.GetComponent(typeof(ICreature)))
         {
-            creatures.Remove(other.GetComponent<Node_Creature>());
+            creatures.Remove((ICreature)other.GetComponent(typeof(ICreature)));
         }
     }
 
@@ -166,7 +166,7 @@ public class Node : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(this.transform.position, NodeVisitorAoe);
+        Gizmos.DrawWireSphere(this.transform.position, NodeAoe);
     }
 
 

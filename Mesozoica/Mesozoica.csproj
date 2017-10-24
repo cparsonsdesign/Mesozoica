@@ -81,6 +81,7 @@
     <Compile Include="Assets\AddCreature.cs" />
     <Compile Include="Assets\Scripts\ANSManager.cs" />
     <Compile Include="Assets\Scripts\Bounds.cs" />
+    <Compile Include="Assets\Scripts\ListInterfaces.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\Node_Creature.cs" />
     <Compile Include="Assets\Scripts\Node_Visitor.cs" />
