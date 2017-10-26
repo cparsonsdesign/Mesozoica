@@ -18,6 +18,7 @@ public class Node : MonoBehaviour
     public List<IHappinessIncreaseable> visitors = new List<IHappinessIncreaseable>();
     public List<ICreature> creatures = new List<ICreature>();
 
+    public LayerMask layerMask;
     [Tooltip("Do not edit this value, it is visible in the inspector for debugging only. The script will update this appropriately. This is the value that will be used to sort the nodes in the GUI")]
     public float ror = 3;
     #region ( Ror multipliers )
@@ -60,7 +61,7 @@ public class Node : MonoBehaviour
 
     void GrabCreaturesAndVisitors(Vector3 center)
     {
-        Collider[] visitorColliders = Physics.OverlapSphere(center, NodeAoe);
+        Collider[] visitorColliders = Physics.OverlapSphere(center, NodeAoe, layerMask);
 
         foreach (Collider hit in visitorColliders)
         {

@@ -24,7 +24,7 @@ public class ANSManager: MonoBehaviour, IGetRor
         return node1.ror.CompareTo(node2.ror);
     }
 
-    public List<Node> SortedNodeListForGui()
+    public List<Node> SortNodeListForGui()
     {
         nodeList.Sort(SortByRor);
         nodeList.Reverse();

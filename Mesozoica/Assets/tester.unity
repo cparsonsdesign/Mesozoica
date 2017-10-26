@@ -172,6 +172,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ans: {fileID: 920017978}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   ror: 0
   baseRorAmount: 3
   maxCountChange: 5
@@ -957,6 +960,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ans: {fileID: 920017978}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   ror: 0
   baseRorAmount: 3
   maxCountChange: 5
@@ -1348,6 +1354,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ans: {fileID: 920017978}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   ror: 0
   baseRorAmount: 3
   maxCountChange: 5
@@ -1655,6 +1664,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ans: {fileID: 920017978}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   ror: 0
   baseRorAmount: 3
   maxCountChange: 5
