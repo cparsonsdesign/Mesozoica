@@ -1,7 +1,7 @@
 ﻿// Author: Chris Parsons
-// Purpose:
-// Created:
-// Last Updated: 
+// Purpose: Interfaces to allow the use of the MA Marketplace
+// Created:10/25/2017
+// Last Updated: 10/25/2017 CP
 
 using System.Collections;
 using System.Collections.Generic;

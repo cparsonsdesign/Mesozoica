@@ -16,5 +16,5 @@ public class Node_Creature : MonoBehaviour, ICreature
     {
         return rarity;
     }
-   
+
 }

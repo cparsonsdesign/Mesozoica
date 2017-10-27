@@ -19,6 +19,6 @@ public interface ICreature
 
 public interface IGetRor
 {
-   List<Node> SortNodeListForGui();
+    List<Node> SortNodeListForGui();
 }
 

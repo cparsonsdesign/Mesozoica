@@ -1,5 +1,5 @@
 ﻿// Author: Chris Parsons
-// Purpose: Small script hooking the visito up to the ANS Sysytem
+// Purpose: Small script hooking the visitor up to the ANS Sysytem
 // Created: 10/18/2017
 // Last Updated: 10/20/2017 CP
 
