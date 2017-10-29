@@ -1,7 +1,7 @@
 ﻿// Author: Chris Parsons
 // Purpose: To maintain a lis of the nodes and alow the target node to be assigned.
 // Created: 10/17/2017
-// Last Updated: 10/20/2017 CP
+// Last Updated: 10/28/2017 CP
 
 using System;
 using System.Collections;
@@ -24,6 +24,7 @@ public class ANSManager: MonoBehaviour, IGetRor
     public event LostNode NodeRemoved;
 
     int thresholdReached = 0;
+
     // This is a temporary variable. This needs to be a reference to the player's actual visitor count.
     public int visitorCount;
 

@@ -83,7 +83,8 @@
     <Compile Include="Assets\Scripts\ANS\ListInterfaces.cs" />
     <Compile Include="Assets\Scripts\ANS\Node.cs" />
     <Compile Include="Assets\Scripts\BC_MA\MaInterfaces.cs" />
-    <Compile Include="Assets\Scripts\BC_MA\MaMarketplace.cs" />
+    <Compile Include="Assets\Scripts\BC_MA\MAItem.cs" />
+    <Compile Include="Assets\Scripts\BC_MA\MaMarketplaceManager.cs" />
     <Compile Include="Assets\Scripts\BC_MA\VisitorFlow.cs" />
     <Compile Include="Assets\Scripts\Bounds.cs" />
     <Compile Include="Assets\Scripts\Node_Creature.cs" />

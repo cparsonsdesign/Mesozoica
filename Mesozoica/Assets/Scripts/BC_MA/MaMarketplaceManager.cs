@@ -1,63 +1,36 @@
 ﻿// Author: Chris Parsons
 // Purpose: to facilitate usage of the MA through a GUI
 // Created: 10/25/2017
-// Last Updated: 10/26/2017 CP
+// Last Updated: 10/29/2017 CP
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MaMarketplace : MonoBehaviour, IPurchaseable
+public class MaMarketplaceManager: MonoBehaviour
 {
-    [SerializeField]
-    float localCost = 9750;
-    [SerializeField]
-    float nationalCost = 18230;
-    [SerializeField]
-    float internationalCost = 44732;
-    float cost;
-
-    [SerializeField]
-    float localMaPoints = 100;
-    [SerializeField]
-    float nationalMaPoints = 1000;
-    [SerializeField]
-    float internationalMaPoints = 2500;
-    float maPoints;
+    public MAItem[] maItems;
 
     // Temporary placeholder variables. These will need to be swapped out for references to the player's stats.
     float totalMaPoints;
     float playerWallet;
 
+    // Variables for purchasing MaPoints
+    float cost;
+    float maPoints;
+
     // Variables for the MA Point degradation.
     float MaDegradeTimer;
     float MaDegradeTimeLimit = 120;
-
     bool crIsRunning;
 
 
-    // Set the cost and MA Points to the appropriate level
-    public void BuyLocal()
+    public void SetValues(int arrayPosition)
     {
-        cost = localCost;
-        maPoints = localMaPoints;
-        PurchaseMa();
+        cost = maItems[arrayPosition].cost;
+        maPoints = maItems[arrayPosition].maPoints;
     }
-
-    public void BuyNational()
-    {
-        cost = nationalCost;
-        maPoints = nationalMaPoints;
-        PurchaseMa();
-    }
-
-    public void BuyInternational()
-    {
-        cost = internationalCost;
-        maPoints = internationalMaPoints;
-        PurchaseMa();
-    }
-
+    
     // This interface will deduct the player's money in exchange for MA Points.
     // It will need to be properly wired to the player's stats. playerWallet and totalMaPoints are currently just placeholder variables
     public void PurchaseMa()
