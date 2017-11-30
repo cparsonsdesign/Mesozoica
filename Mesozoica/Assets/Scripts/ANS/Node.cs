@@ -38,7 +38,7 @@ public class Node : MonoBehaviour
     float checkTimeLimit;
     [SerializeField]
     [Tooltip("The number of visitors/creatures that need to be added/removed to trigger the RoR to update")]
-    int maxCountChange;
+    int maxCountChange; //! Value is never set. It's implied that this should be 5. Should this be a const = 5?
     #endregion
 
     float NodeAoe = 35;
@@ -65,13 +65,20 @@ public class Node : MonoBehaviour
 
         foreach (Collider hit in visitorColliders)
         {
-            if (hit.GetComponent(typeof(IHappinessIncreaseable)))
+            // Cache IHappinessIncreaseable so we don't have to get it twice
+            IHappinessIncreaseable visitor = (IHappinessIncreaseable) hit.GetComponent(typeof(IHappinessIncreaseable));
+            if (visitor != null)
             {
-                visitors.Add((IHappinessIncreaseable)hit.GetComponent(typeof(IHappinessIncreaseable)));
+                visitors.Add(visitor);
             }
-            else if (hit.GetComponent(typeof(ICreature)))
+            else
             {
-                creatures.Add((ICreature)hit.GetComponent(typeof(ICreature)));
+                // Cache ICreature so we don't have to get it twice
+                ICreature creature = (ICreature) hit.GetComponent(typeof(ICreature));
+                if (creature != null)
+                {
+                    creatures.Add(creature);
+                }
             }
         }
     }
@@ -91,7 +98,7 @@ public class Node : MonoBehaviour
         {
             // Checks to see if the current count of creatures or visitors has shifted up or down by 5.
             // This check is to help not run calculations when they aren't 100% needed.
-            if (visitors.Count - currentVisitorCount >= Mathf.Abs(maxCountChange) || creatures.Count - currentCreatureCount == Mathf.Abs(maxCountChange))
+            if (Mathf.Abs(visitors.Count - currentVisitorCount) >= maxCountChange || Mathf.Abs(creatures.Count - currentCreatureCount) >= maxCountChange)
             {
                 currentVisitorCount = visitors.Count;
                 currentCreatureCount = creatures.Count;
@@ -122,6 +129,7 @@ public class Node : MonoBehaviour
                 {
                     for (int i = 0; i < visitors.Count; i++)
                     {
+                        // This could be a problem if a visitor is removed as it hits this point since this is a coroutine.
                         visitors[i].IncreaseHappiness(ror);
                     }
                     yield return new WaitForSecondsRealtime(increaseWaitTimer);
@@ -143,6 +151,8 @@ public class Node : MonoBehaviour
         if (other.GetComponent(typeof(IHappinessIncreaseable)))
         {
             visitors.Add((IHappinessIncreaseable)other.GetComponent(typeof(IHappinessIncreaseable)));
+            // There should never be both an IHappinessIncreaseable and ICreature, correct?
+            // Just return here or put an else on next if.
         }
         if (other.GetComponent(typeof(ICreature)))
         {
@@ -152,13 +162,21 @@ public class Node : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         // add the appropriate type here
-        if (other.GetComponent(typeof(IHappinessIncreaseable)))
+
+        // Cache IHappinessIncreaseable so we don't have to get it twice
+        IHappinessIncreaseable visitor = (IHappinessIncreaseable) other.GetComponent(typeof(IHappinessIncreaseable));
+        if (visitor != null)
         {
-            visitors.Remove((IHappinessIncreaseable)other.GetComponent(typeof(IHappinessIncreaseable)));
+            visitors.Remove(visitor);
+            // There should never be both an IHappinessIncreaseable and ICreature, correct?
+            // Just return here or put an else on next if.
         }
-        if (other.GetComponent(typeof(ICreature)))
+
+        // Cache ICreature so we don't have to get it twice
+        ICreature creature = (ICreature) other.GetComponent(typeof(ICreature));
+        if (creature != null)
         {
-            creatures.Remove((ICreature)other.GetComponent(typeof(ICreature)));
+            creatures.Remove(creature);
         }
     }
 
