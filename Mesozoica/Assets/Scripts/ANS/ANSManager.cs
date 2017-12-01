@@ -36,7 +36,7 @@ public class ANSManager: MonoBehaviour, IGetRor
     public List<Node> SortNodeListForGui()
     {
         nodeList.Sort(SortByRor);
-        nodeList.Reverse();
+        nodeList.Reverse(); // I'm sure this isn't done often, but we could just return the negative value on SortByRor and not need this.
         return nodeList;
     }
 
